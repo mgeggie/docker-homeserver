@@ -1,0 +1,8 @@
+providers:
+  docker: 
+    defaultRule: "Host(`{{ trimPrefix `/` .Name }}.docker.localhost`)"
+    swarmMode: false
+api:
+  insecure: true
+  dashboard: true
+
