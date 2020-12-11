@@ -95,6 +95,9 @@ services:
     environment:
       - CREATE_TUN_DEVICE=true
       - LOCAL_NETWORK=192.168.0.0/16
+      - TRANSMISSION_HOME=/data
+      - PUID=1000
+      - PGID=1000
     volumes:
       - ./transmission/config:/config
       - ./transmission/data:/data
@@ -105,21 +108,28 @@ services:
       - "traefik.http.routers.transmission.middlewares=rate-limit@file,basic-auth@file"
       - "traefik.http.routers.transmission.rule=Host(`transmission.$DOMAINNAME`)"
       - "traefik.http.services.transmission.loadbalancer.server.port=9091"
-#   sonarr:
-#     image: linuxserver/sonarr:latest
-#     container_name: sonarr
-#     networks:
-#       traefik_proxy:
-#         ipv4_address: 192.168.99.89
-#     ports:
-#       - 8990:8989
-#     volumes:
-#       - ./sonarr:/config
-#       - ./downloads/tv:/tv
-#       - ./transmission/data/watch:/downloads
-#     labels:
-#       - "traefik.enable=true"
-#       - "traefik.http.routers.sonarr.rule=Host(`sonarr.$DOMAINNAME`)"
+  sonarr:
+    image: linuxserver/sonarr:latest
+    container_name: sonarr
+    networks:
+      traefik_proxy:
+        ipv4_address: 192.168.99.89
+    ports:
+      - 8990:8989
+    env_file: .env
+    environment:
+      - PUID=1000
+      - PGID=1000
+    volumes:
+      - ./sonarr:/config
+      - ./downloads/tv:/tv
+      - ./transmission/data/watch:/downloads
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.sonarr.entrypoints=https"
+      - "traefik.http.routers.sonarr.tls=true"
+      - "traefik.http.routers.sonarr.middlewares=rate-limit@file,basic-auth@file"
+      - "traefik.http.routers.sonarr.rule=Host(`sonarr.$DOMAINNAME`)"
   whoami:
     image: traefik/whoami
     restart: unless-stopped
