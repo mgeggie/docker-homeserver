@@ -1,0 +1,9 @@
+blocklists/
+completed/
+incomplete/
+resume/
+torrents/
+watch/
+*.dat
+*.log
+stats.json
